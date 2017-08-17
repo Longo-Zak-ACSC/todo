@@ -7,6 +7,7 @@ angular.module('todoApp', [])
         todoList.user = "guest";
         todoList.selectedUser = todoList.user;
         todoList.priority = "low";
+        todoList.priority_order = "3";
         todoList.label = "info";
         todoList.showTodos = true;
 
@@ -49,12 +50,15 @@ angular.module('todoApp', [])
             switch (value) {
                 case "low":
                     todoList.label = "info";
+                    todoList.priority_order = "3";
                     break;
                 case "medium":
                     todoList.label = "warning";
+                    todoList.priority_order = "2";
                     break;
                 case "high":
                     todoList.label = "danger";
+                    todoList.priority_order = "1";
                     break;
             }
         };
@@ -118,7 +122,7 @@ angular.module('todoApp', [])
             return count;
         };
 
-        todoList.archive = function () {
+        todoList.archiveSelected = function () {
             var currentTodos = todoList.todos_data.todos;
             var temp = [];
             angular.forEach(currentTodos, function (todo) {
@@ -128,6 +132,19 @@ angular.module('todoApp', [])
                     todoList.showArchives = true;
                     todoList.todos_data.deadTodos.push(todo);
                 }
+            });
+
+            todoList.todos_data.todos = temp;
+            httpRequest("PUT", todoList.data_url, angular.toJson(todoList.todos_data));
+        };
+
+        todoList.deleteSelected = function () {
+            var currentTodos = todoList.todos_data.todos;
+            var temp = [];
+            angular.forEach(currentTodos, function (todo) {
+                if (!todo.done) {
+                    temp.push(todo);
+                } 
             });
 
             todoList.todos_data.todos = temp;
@@ -161,7 +178,7 @@ angular.module('todoApp', [])
 
         todoList.manageTodo = {		
             add: function () {
-                var newTodo = { text: todoList.todoText, done: false, priority: todoList.priority, label: todoList.label };
+                var newTodo = { text: todoList.todoText, done: false, priority: todoList.priority, label: todoList.label, priority_order: todoList.priority_order };
                 todoList.todos_data.todos.push(newTodo);
                 todoList.todoText = '';
 
@@ -170,18 +187,30 @@ angular.module('todoApp', [])
             edit: function (todo) {
                 todo['editing'] = true;
                 todo['edit_text'] = todo.text;
+                todo['edit_label'] = todo.label;
+                todo['edit_priority'] = todo.priority;
+                todo['edit_priority_order'] = todo.priority_order;
             },
             save: function (todo) {
                 todo['editing'] = false;
                 todo.text = todo.edit_text;
+                todo.label = todo.edit_label;
+                todo.priority = todo.edit_priority;
+                todo.priority_order = todo.edit_priority_order;
                 delete todo['editing'];
                 delete todo['edit_text'];
+                delete todo['edit_label'];
+                delete todo['edit_priority'];
+                delete todo['edit_priority_order'];
                 httpRequest("PUT", todoList.data_url, angular.toJson(todoList.todos_data));
             },
             cancel: function (todo) {
                 todo['editing'] = false;
                 delete todo['editing'];
                 delete todo['edit_text'];
+                delete todo['edit_label'];
+                delete todo['edit_priority'];
+                delete todo['edit_priority_order'];
             },
             remove: function (todo) {
                 var todoIndex = getObjectKeyIndex(todoList.todos_data.todos, todo.text);
@@ -192,6 +221,24 @@ angular.module('todoApp', [])
                     todoList.todos_data.todos.splice(todoIndex, 1);
                     httpRequest("PUT", todoList.data_url, angular.toJson(todoList.todos_data));
                 }
+            },
+            updatePriority: function (todo, priority) {
+                todo.edit_priority = priority;
+
+                switch (priority) {
+                    case "low":
+                        todo.edit_priority_order = "3";
+                        todo.edit_label = "info";
+                        break;
+                    case "medium":
+                        todo.edit_priority_order = "2";
+                        todo.edit_label = "warning";
+                        break;
+                    case "high":
+                        todo.edit_priority_order = "1";
+                        todo.edit_label = "danger";
+                        break;
+                }                
             }
         };
     });

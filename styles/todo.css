@@ -94,6 +94,10 @@ input[type=checkbox], input[type=radio] {
     margin: -4px 10px 0 0;
 }
 
+hr.dotted {
+    border-top: 1px dotted #ccc
+}
+
 @media (min-width: 768px) {
     .header-bg h3 {
         font-size: 54px;
