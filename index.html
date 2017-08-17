@@ -16,19 +16,22 @@
     </div>
     <div class="container-fluid">
         <div class="row">
-            <div class="col-md-2 col-md-offset9">
-                <select class="form-control input-sm" ng-model="todoList.selectedUser" ng-change="todoList.setUser(todoList.selectedUser)">
-                    <option value="guest" selected>guest</option>
-                    <option value="mom">mom</option>
-                    <option value="pappa">pappa</option>
-                    <option value="jules">jules</option>
-                    <option value="celia">celia</option>
-                </select>
+            <div class="col-lg-2">
+                <div class="form-group">
+                    <label for="selectedUser">Select User</label>
+                    <select class="form-control input-sm" ng-model="todoList.selectedUser" ng-change="todoList.setUser(todoList.selectedUser)" id="selectedUser">
+                        <option value="guest" selected>guest</option>
+                        <option value="mom">mom</option>
+                        <option value="pappa">pappa</option>
+                        <option value="jules">jules</option>
+                        <option value="celia">celia</option>
+                    </select>
+                </div>
             </div>
         </div>
-        <br />
+        <hr style="border-top: 1px dotted #ccc" />
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-lg-5">
                 <form class="form" ng-submit="todoList.manageTodo.add()">
                     <div class="form-group">
                         <div class="input-group">
@@ -36,23 +39,36 @@
                             <div class="input-group-addon submit-click" ng-click="todoList.manageTodo.add()">SUBMIT</div>
                         </div>
                     </div>
+                    <div class="btn-group" data-toggle="buttons">
+                        <label class="btn btn-default active" ng-click="todoList.setPriority('low')">
+                            <input type="radio" value="low" name="options" id="lowPriority" autocomplete="off" checked>low
+                        </label>
+                        <label class="btn btn-default" ng-click="todoList.setPriority('medium')">
+                            <input type="radio" value="medium" name="options" id="mediumPriority" autocomplete="off">medium
+                        </label>
+                        <label class="btn btn-default" ng-click="todoList.setPriority('high')">
+                            <input type="radio" value="high" name="options" id="highPriority" autocomplete="off">high
+                        </label>
+                    </div>
                 </form>
             </div>
         </div>
+        <hr style="border-top: 1px dotted #ccc" />
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-lg-12">
                 <ul class="list-unstyled" ng-show="todoList.showTodos">
                     <li ng-repeat="todo in todoList.todos_data.todos">
                         <div class="row">
                             <div class="todos-bar">
-                                <div class="col-md-9">
+                                <div class="col-lg-9">
                                     <form class="form" ng-submit="todoList.manageTodo.save(todo)">
                                         <input class="checkbox-inline" ng-if="!todo.editing" type="checkbox" ng-model="todo.done">
                                         <input class="form-control input-edit" ng-if="todo.editing" type="text" ng-model="todo.edit_text">
                                         <span class="todo-text done-{{todo.done}}" ng-if="!todo.editing">{{todo.text}}</span>
+                                        <span class="label label-{{todo.label}}" ng-if="todo.priority">{{todo.priority}}</span>
                                     </form>
                                 </div>
-                                <div class="col-md-3 todos-actions">
+                                <div class="col-lg-3 todos-actions">
                                     <button class="btn btn-danger" ng-click="todoList.manageTodo.remove(todo)" ng-if="!todo.editing" title="delete this todo"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></button>&nbsp;
                                     <button class="btn btn-primary" ng-click="todoList.manageTodo.edit(todo)" ng-if="!todo.editing && !todo.done" title="edit this todo"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>&nbsp;
                                     <button class="btn btn-primary" ng-click="todoList.manageTodo.save(todo)" ng-if="todo.editing" title="save your edits">SAVE</button>&nbsp;
@@ -65,12 +81,12 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-12">
-                <button class="btn btn-primary btn-sm" ng-click="todoList.archive()" title="archive completed todos">Archive completed todos</button>
+            <div class="col-lg-12">
+                <button class="btn btn-primary btn-sm" ng-click="todoList.archive()" title="archive completed todos">Archive Selected todos</button>
             </div>
         </div>
         <div class="row" ng-show="todoList.showArchives">
-            <div class="col-md-6">
+            <div class="col-lg-6">
                 <div class="archives">
                     <h4>Dead Todos Graveyard</h4>
                     <ul class="unstyled">
@@ -82,7 +98,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-6">
+            <div class="col-lg-6">
                 <div class="clear-buttons-group">
                     <div class="hidden-xs">   
                         <button class="btn btn-default" ng-click="todoList.clear('todos')" title="clear all active todos">CLEAR TODOS</button>

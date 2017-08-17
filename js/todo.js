@@ -6,6 +6,8 @@ angular.module('todoApp', [])
         todoList.remainingTodos = 0;
         todoList.user = "guest";
         todoList.selectedUser = todoList.user;
+        todoList.priority = "low";
+        todoList.label = "info";
         todoList.showTodos = true;
 
         todoList.setUser = function (user) {
@@ -37,6 +39,22 @@ angular.module('todoApp', [])
                 default:
                     todoList.data_url = "https://api.myjson.com/bins/16ez9b";
                     todoList.setUserUtils(todoList.data_url, 'guest');
+                    break;
+            }
+        };
+
+        todoList.setPriority = function (value) {
+            todoList.priority = value;
+
+            switch (value) {
+                case "low":
+                    todoList.label = "info";
+                    break;
+                case "medium":
+                    todoList.label = "warning";
+                    break;
+                case "high":
+                    todoList.label = "danger";
                     break;
             }
         };
@@ -143,7 +161,7 @@ angular.module('todoApp', [])
 
         todoList.manageTodo = {		
             add: function () {
-                var newTodo = { text: todoList.todoText, done: false };
+                var newTodo = { text: todoList.todoText, done: false, priority: todoList.priority, label: todoList.label };
                 todoList.todos_data.todos.push(newTodo);
                 todoList.todoText = '';
 

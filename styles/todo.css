@@ -79,8 +79,6 @@ h4 {
 }
 
 .todos-bar .todo-text {
-    display: inline-block;
-    font-size: 18px;
     color: #878787;
 }
 
