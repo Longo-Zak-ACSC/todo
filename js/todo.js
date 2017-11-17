@@ -1,8 +1,9 @@
-app.controller('TodoListController', function ($scope, $http) {
+app.controller('TodoListController', function ($scope, $http, dataService) {
     var todoList = this;
 
     $scope.data_url = "https://api.myjson.com/bins/16ez9b";
     $scope.remainingTodos = 0;
+    $scope.user_data_ID = { "mom": "79i8j", "pappa": "12thar", "jules": "9n8nn", "celia": "s3oer", "guest": "16ez9b"};
     $scope.user = "guest";
     $scope.selectedUser = $scope.user;
     $scope.priority = "low";
@@ -10,36 +11,19 @@ app.controller('TodoListController', function ($scope, $http) {
     $scope.label = "info";
     $scope.showTodos = true;
 
+
     $scope.setUser = function (user) {
         $scope.user = user;
         $scope.showArchives = false;
         $scope.showTodos = false;
 
-        switch (user.toLowerCase()) {
-            case "mom":
-                $scope.data_url = "https://api.myjson.com/bins/79i8j";
-                $scope.setUserUtils($scope.data_url, user);
-                break;
-            case "pappa":
-                $scope.data_url = "https://api.myjson.com/bins/12thar";
-                $scope.setUserUtils($scope.data_url, user);
-                break;
-            case "jules":
-                $scope.data_url = "https://api.myjson.com/bins/9n8nn";
-                $scope.setUserUtils($scope.data_url, user);
-                break;
-            case "celia":
-                $scope.data_url = "https://api.myjson.com/bins/s3oer";
-                $scope.setUserUtils($scope.data_url, user);
-                break;
-            case "guest":
-                $scope.data_url = "https://api.myjson.com/bins/16ez9b";
-                $scope.setUserUtils($scope.data_url, user);
-                break;
-            default:
-                $scope.data_url = "https://api.myjson.com/bins/16ez9b";
-                $scope.setUserUtils($scope.data_url, 'guest');
-                break;
+        for (key in $scope.user_data_ID) {
+            if (key == user) {
+                $scope.data_url = "https://api.myjson.com/bins/" + $scope.user_data_ID[key];
+                httpRequest("GET", $scope.data_url, null);
+                $scope.setHash(user);
+                $scope.selectedUser = user;
+            }
         }
     };
 
@@ -60,12 +44,6 @@ app.controller('TodoListController', function ($scope, $http) {
                 $scope.priority_order = "1";
                 break;
         }
-    };
-
-    $scope.setUserUtils = function (data_url, user) {
-        httpRequest("GET", data_url, null);
-        $scope.setHash(user);
-        $scope.selectedUser = user;
     };
 
     $scope.setHash = function (hash) {
