@@ -85,25 +85,6 @@ app.controller('TodoListController', function ($scope, $http, dataService) {
         window.location.hash = hash;
     };
 
-    function httpRequest(type, url, data) {
-        $http({
-            method: type,
-            url: url,
-            data: data
-        }).then(function mySuccess(response) {
-            $scope.todos_data = angular.fromJson(response.data);
-            $scope.remaining();
-
-            $scope.showTodos = true;
-
-            if ($scope.todos_data.deadTodos.length > 0) {
-                $scope.showArchives = true;
-            }
-        }, function myError(response) {
-            console.log("there was an error: " + response.status);
-        });
-    }
-
     function getObjectKeyIndex(obj, keyToFind) {
         var i = 0;
 
