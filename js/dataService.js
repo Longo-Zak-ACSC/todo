@@ -8,7 +8,7 @@ angular.module('todoApp')
         };
 
         this.updateUser = function (id, data) {
-            return $http.post(urlBase + id, data);
+            return $http.put(urlBase + id, data);
         };
 
     }]);

@@ -1,9 +1,8 @@
 app.controller('TodoListController', function ($scope, $http, dataService) {
     var todoList = this;
 
-    $scope.data_url = "https://api.myjson.com/bins/16ez9b";
     $scope.remainingTodos = 0;
-    $scope.user_data_ID = { "mom": "79i8j", "pappa": "12thar", "jules": "9n8nn", "celia": "s3oer", "guest": "16ez9b"};
+    $scope.user_IDs = { "mom": "79i8j", "pappa": "12thar", "jules": "9n8nn", "celia": "s3oer", "guest": "16ez9b"};
     $scope.user = "guest";
     $scope.selectedUser = $scope.user;
     $scope.priority = "low";
@@ -11,21 +10,57 @@ app.controller('TodoListController', function ($scope, $http, dataService) {
     $scope.label = "info";
     $scope.showTodos = true;
 
-
     $scope.setUser = function (user) {
         $scope.user = user;
         $scope.showArchives = false;
         $scope.showTodos = false;
 
-        for (key in $scope.user_data_ID) {
+        for (key in $scope.user_IDs) {
             if (key == user) {
-                $scope.data_url = "https://api.myjson.com/bins/" + $scope.user_data_ID[key];
-                httpRequest("GET", $scope.data_url, null);
                 $scope.setHash(user);
                 $scope.selectedUser = user;
+                $scope.getUser($scope.user_IDs[key]);
             }
         }
     };
+
+    $scope.getUser = function (id) {
+        dataService.getUser(id)
+            .then(function mySuccess(response) {
+                $scope.userSetup(angular.fromJson(response.data));
+            }, function myError(response) {
+                console.log("there was an error: " + response.status);
+            });
+    };
+
+    $scope.updateUser = function (id, data) {
+        dataService.updateUser(id, data)
+            .then(function mySuccess(response) {
+                $scope.userSetup(angular.fromJson(response.data));
+            }, function myError(response) {
+                console.log("there was an error: " + response.status);
+            });
+    };
+
+    $scope.userSetup = function (response) {
+        $scope.todos_data = response;
+        $scope.remaining();
+
+        $scope.showTodos = true;
+
+        if ($scope.todos_data.deadTodos.length > 0) {
+            $scope.showArchives = true;
+        }
+    };
+
+    $scope.userID = function (user) {
+        for (key in $scope.user_IDs) {
+            if (key == user) {
+                return $scope.user_IDs[key];
+            }
+        }
+    };
+
 
     $scope.setPriority = function (value) {
         $scope.priority = value;
@@ -82,13 +117,13 @@ app.controller('TodoListController', function ($scope, $http, dataService) {
         return null;
     }
 
-    //Initial data load
-    httpRequest("GET", $scope.data_url, null);
-
+    //page load data load
     if (window.location.hash != '') {
         $scope.hashValue = window.location.hash.substring(1);
         $scope.setUser($scope.hashValue);
         $scope.selectedUser = $scope.hashValue;
+    } else {
+        $scope.getUser($scope.userID($scope.user));
     }
 
     $scope.remaining = function () {
@@ -112,7 +147,7 @@ app.controller('TodoListController', function ($scope, $http, dataService) {
         });
 
         $scope.todos_data.todos = temp;
-        httpRequest("PUT", $scope.data_url, angular.toJson($scope.todos_data));
+        $scope.updateUser($scope.userID($scope.user), angular.toJson($scope.todos_data));
     };
 
     $scope.deleteSelected = function () {
@@ -125,7 +160,7 @@ app.controller('TodoListController', function ($scope, $http, dataService) {
         });
 
         $scope.todos_data.todos = temp;
-        httpRequest("PUT", $scope.data_url, angular.toJson($scope.todos_data));
+        $scope.updateUser($scope.userID($scope.user), angular.toJson($scope.todos_data));
     };
 
     $scope.clear = function (data) {
@@ -135,18 +170,18 @@ app.controller('TodoListController', function ($scope, $http, dataService) {
             switch (data) {
                 case "todos":
                     $scope.todos_data.todos = [];
-                    httpRequest("PUT", $scope.data_url, angular.toJson($scope.todos_data));
+                    $scope.updateUser($scope.userID($scope.user), angular.toJson($scope.todos_data));
                     break;
                 case "deadTodos":
                     $scope.todos_data.deadTodos = [];
                     $scope.showArchives = false;
-                    httpRequest("PUT", $scope.data_url, angular.toJson($scope.todos_data));
+                    $scope.updateUser($scope.userID($scope.user), angular.toJson($scope.todos_data));
                     break;
                 case "everything":
                     $scope.todos_data.todos = [];
                     $scope.todos_data.deadTodos = [];
                     $scope.showArchives = false;
-                    httpRequest("PUT", $scope.data_url, angular.toJson($scope.todos_data));
+                    $scope.updateUser($scope.userID($scope.user), angular.toJson($scope.todos_data));
                     break;
             }
         }
@@ -159,7 +194,7 @@ app.controller('TodoListController', function ($scope, $http, dataService) {
             $scope.todos_data.todos.push(newTodo);
             $scope.todoText = '';
 
-            httpRequest("PUT", $scope.data_url, angular.toJson($scope.todos_data));
+            $scope.updateUser($scope.userID($scope.user), angular.toJson($scope.todos_data));
         },
         edit: function (todo) {
             todo['editing'] = true;
@@ -179,7 +214,8 @@ app.controller('TodoListController', function ($scope, $http, dataService) {
             delete todo['edit_label'];
             delete todo['edit_priority'];
             delete todo['edit_priority_order'];
-            httpRequest("PUT", $scope.data_url, angular.toJson($scope.todos_data));
+
+            $scope.updateUser($scope.userID($scope.user), angular.toJson($scope.todos_data));
         },
         cancel: function (todo) {
             todo['editing'] = false;
@@ -196,7 +232,7 @@ app.controller('TodoListController', function ($scope, $http, dataService) {
 
             if (ok) {
                 $scope.todos_data.todos.splice(todoIndex, 1);
-                httpRequest("PUT", $scope.data_url, angular.toJson($scope.todos_data));
+                $scope.updateUser($scope.userID($scope.user), angular.toJson($scope.todos_data));
             }
         },
         updatePriority: function (todo, priority) {
