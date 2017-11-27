@@ -1,4 +1,4 @@
-app.controller('TodoListController', function ($scope, $http, users) {
+app.controller('TodoListController', function ($scope, $http, users, dataFactory) {
     var todoList = this;
 
     $scope.remainingTodos = 0;
@@ -170,33 +170,14 @@ app.controller('TodoListController', function ($scope, $http, users) {
             $scope.updateUser(users.userID($scope.user), angular.toJson($scope.todos_data));
         },
         edit: function (todo) {
-            todo['editing'] = true;
-            todo['edit_text'] = todo.text;
-            todo['edit_label'] = todo.label;
-            todo['edit_priority'] = todo.priority;
-            todo['edit_priority_order'] = todo.priority_order;
+            dataFactory.editTodo(todo);
         },
         save: function (todo) {
-            todo['editing'] = false;
-            todo.text = todo.edit_text;
-            todo.label = todo.edit_label;
-            todo.priority = todo.edit_priority;
-            todo.priority_order = todo.edit_priority_order;
-            delete todo['editing'];
-            delete todo['edit_text'];
-            delete todo['edit_label'];
-            delete todo['edit_priority'];
-            delete todo['edit_priority_order'];
-
+            dataFactory.saveTodo(todo);
             $scope.updateUser(users.userID($scope.user), angular.toJson($scope.todos_data));
         },
         cancel: function (todo) {
-            todo['editing'] = false;
-            delete todo['editing'];
-            delete todo['edit_text'];
-            delete todo['edit_label'];
-            delete todo['edit_priority'];
-            delete todo['edit_priority_order'];
+            dataFactory.cancelEdit(todo);
         },
         remove: function (todo) {
             var todoIndex = getObjectKeyIndex($scope.todos_data.todos, todo.text);
@@ -209,22 +190,7 @@ app.controller('TodoListController', function ($scope, $http, users) {
             }
         },
         updatePriority: function (todo, priority) {
-            todo.edit_priority = priority;
-
-            switch (priority) {
-                case "low":
-                    todo.edit_priority_order = "3";
-                    todo.edit_label = "info";
-                    break;
-                case "medium":
-                    todo.edit_priority_order = "2";
-                    todo.edit_label = "warning";
-                    break;
-                case "high":
-                    todo.edit_priority_order = "1";
-                    todo.edit_label = "danger";
-                    break;
-            }                
+            dataFactory.updatePriority(todo, priority);
         }
     };
 });
