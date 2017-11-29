@@ -54,23 +54,10 @@ app.controller('TodoListController', function ($scope, $http, users, dataFactory
         }
     };
 
-    $scope.setPriority = function (value) {
-        $scope.priority = value;
-
-        switch (value) {
-            case "low":
-                $scope.label = "info";
-                $scope.priority_order = "3";
-                break;
-            case "medium":
-                $scope.label = "warning";
-                $scope.priority_order = "2";
-                break;
-            case "high":
-                $scope.label = "danger";
-                $scope.priority_order = "1";
-                break;
-        }
+    $scope.setPriority = function (level, label, order) {
+        $scope.priority = level;
+        $scope.label = label;
+        $scope.priority_order = order;
     };
 
     $scope.setHash = function (hash) {
