@@ -34,8 +34,8 @@ app.controller('TodoListController', function ($scope, $http, users, dataFactory
             });
     };
 
-    $scope.updateUser = function (id, data) {
-        users.updateUser(id, data)
+    $scope.updateUser = function () {
+        users.updateUser(users.userID($scope.user), angular.toJson($scope.todos_data))
             .then(function mySuccess(response) {
                 $scope.userSetup(angular.fromJson(response.data));
             }, function myError(response) {
@@ -107,7 +107,7 @@ app.controller('TodoListController', function ($scope, $http, users, dataFactory
         });
 
         $scope.todos_data.todos = temp;
-        $scope.updateUser(users.userID($scope.user), angular.toJson($scope.todos_data));
+        $scope.updateUser();
     };
 
     $scope.deleteSelected = function () {
@@ -120,33 +120,27 @@ app.controller('TodoListController', function ($scope, $http, users, dataFactory
         });
 
         $scope.todos_data.todos = temp;
-        $scope.updateUser(users.userID($scope.user), angular.toJson($scope.todos_data));
+        $scope.updateUser();
     };
 
-    $scope.clear = function (data) {
-        var ok = confirm(data + " WILL BE PERMENTLY DELETED.");
+    $scope.clearTodos = function () {
+        var ok = confirm("ALL TODOS WILL BE PERMANENTLY DELETED.");
 
         if (ok) {
-            switch (data) {
-                case "todos":
-                    $scope.todos_data.todos = [];
-                    $scope.updateUser(users.userID($scope.user), angular.toJson($scope.todos_data));
-                    break;
-                case "deadTodos":
-                    $scope.todos_data.deadTodos = [];
-                    $scope.showArchives = false;
-                    $scope.updateUser(users.userID($scope.user), angular.toJson($scope.todos_data));
-                    break;
-                case "everything":
-                    $scope.todos_data.todos = [];
-                    $scope.todos_data.deadTodos = [];
-                    $scope.showArchives = false;
-                    $scope.updateUser(users.userID($scope.user), angular.toJson($scope.todos_data));
-                    break;
-            }
+            $scope.todos_data.todos = [];
+            $scope.updateUser();
         }
     };
 
+    $scope.clearArchive = function () {
+        var ok = confirm("ALL ARCHIVED TODOS WILL BE PERMANENTLY DELETED.");
+
+        if (ok) {
+            $scope.todos_data.deadTodos = [];
+            $scope.showArchives = false;
+            $scope.updateUser();
+        }
+    };
 
     $scope.manageTodo = {		
         add: function () {
@@ -154,14 +148,14 @@ app.controller('TodoListController', function ($scope, $http, users, dataFactory
             $scope.todos_data.todos.push(newTodo);
             $scope.todoText = '';
 
-            $scope.updateUser(users.userID($scope.user), angular.toJson($scope.todos_data));
+            $scope.updateUser();
         },
         edit: function (todo) {
             dataFactory.editTodo(todo);
         },
         save: function (todo) {
             dataFactory.saveTodo(todo);
-            $scope.updateUser(users.userID($scope.user), angular.toJson($scope.todos_data));
+            $scope.updateUser();
         },
         cancel: function (todo) {
             dataFactory.cancelEdit(todo);
@@ -173,7 +167,7 @@ app.controller('TodoListController', function ($scope, $http, users, dataFactory
 
             if (ok) {
                 $scope.todos_data.todos.splice(todoIndex, 1);
-                $scope.updateUser(users.userID($scope.user), angular.toJson($scope.todos_data));
+                $scope.updateUser();
             }
         },
         updatePriority: function (todo, priority) {
