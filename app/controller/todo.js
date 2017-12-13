@@ -64,18 +64,6 @@ app.controller('TodoListController', function ($scope, $http, users, dataFactory
         window.location.hash = hash;
     };
 
-    function getObjectKeyIndex(obj, keyToFind) {
-        var i = 0;
-
-        for (key in obj) {
-            if (obj[key].text == keyToFind) {
-                return i;
-            }
-            i++;
-        }
-
-        return null;
-    }
 
     //page load data load
     if (window.location.hash != '') {
@@ -161,7 +149,7 @@ app.controller('TodoListController', function ($scope, $http, users, dataFactory
             dataFactory.cancelEdit(todo);
         },
         remove: function (todo) {
-            var todoIndex = getObjectKeyIndex($scope.todos_data.todos, todo.text);
+            var todoIndex = dataFactory.getObjectKeyIndex($scope.todos_data.todos, todo.text);
 
             var ok = confirm("ARE YOU SURE? YOU CAN'T GET IT BACK ONCE YOU DELETE IT.");
 

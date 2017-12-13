@@ -50,11 +50,25 @@ angular.module('todoApp')
             }
         };
 
+        var getObjectKeyIndex = function (obj, keyToFind) {
+            var i = 0;
+
+            for (key in obj) {
+                if (obj[key].text == keyToFind) {
+                    return i;
+                }
+                i++;
+            }
+
+            return null;
+        };
+
         return {
             editTodo: editTodo,
             saveTodo: saveTodo,
             cancelEdit: cancelEdit,
-            updatePriority: updatePriority
+            updatePriority: updatePriority,
+            getObjectKeyIndex: getObjectKeyIndex
         }; 
 
     }]);
