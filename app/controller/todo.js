@@ -45,7 +45,7 @@ app.controller('TodoListController', function ($scope, $http, users, dataFactory
 
     $scope.userSetup = function (response) {
         $scope.todos_data = response;
-        $scope.remaining();
+        $scope.remainingTodos = $scope.remaining();
 
         $scope.showTodos = true;
 
